@@ -1,4 +1,5 @@
-#Description
+Description
+===========
 
 This project is started to gain knowledge about the following items:
 
@@ -8,9 +9,10 @@ This project is started to gain knowledge about the following items:
 * spice
 * spicy html5
 
-#Project
+Project
+=======
 
-Citywok is a web GUI to manage your virtual environment. The spice-html5 t is implemented to attach to grapical console via html5.
+Citywok is a web GUI to manage your virtual environment. The spice-html5 is implemented to attach to grapical console via html5.
 
 The frontend is running on docker.
 
@@ -18,7 +20,8 @@ Only a small python api service is needed (backend) on the hypervisor. Your hype
 
 There is a built-in support for plugins that is based on flask blueprints. For example: https://github.com/rene-dekkers/citywok/tree/master/plugins/jenkins 
 
-#TODO
+TODO
+====
 
 * Automatically deployable
 * More generic configuration
