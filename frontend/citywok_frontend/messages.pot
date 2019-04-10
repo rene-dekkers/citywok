@@ -1,0 +1,174 @@
+# Translations template for CityWok.
+# Copyright (C) 2017 Rene Dekkers
+# This file is distributed under the same license as the CityWok project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: CityWok 0.01\n"
+"Report-Msgid-Bugs-To: rene@dekkers.biz\n"
+"POT-Creation-Date: 2017-03-09 13:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 1.3\n"
+
+#: templates/virtuals.html:30 templates/virtuals.html:107
+msgid "Cpu"
+msgstr ""
+
+#: templates/login.html:10
+msgid "Enter your username and password to log in."
+msgstr ""
+
+#: templates/message.html:22
+msgid "Error!"
+msgstr ""
+
+#: templates/login.html:12
+msgid "Password"
+msgstr ""
+
+#: templates/login.html:8 templates/login.html:13
+msgid "Sign in"
+msgstr ""
+
+#: templates/login.html:11
+msgid "Username"
+msgstr ""
+
+#: templates/message.html:16
+msgid "Warning!"
+msgstr ""
+
+#: templates/message.html:4
+msgid "Well done!"
+msgstr ""
+
+#: templates/navigation_bar.html:21
+msgid "add server"
+msgstr ""
+
+#: templates/virtual.html:36 templates/virtual.html:48
+#: templates/virtual.html:74
+msgid "configuration"
+msgstr ""
+
+#: templates/virtuals.html:17
+msgid "cpu"
+msgstr ""
+
+#: templates/virtual.html:37 templates/virtual.html:75
+#: templates/virtuals.html:97
+msgid "graphical console"
+msgstr ""
+
+#: templates/virtual_groupby.inc.html:7
+msgid "group by"
+msgstr ""
+
+#: templates/virtual.html:50 templates/virtual_groupby.inc.html:12
+#: templates/virtuals.html:10 templates/virtuals.html:28
+#: templates/virtuals.html:101
+msgid "hypervisor"
+msgstr ""
+
+#: templates/navigation_bar.html:29
+msgid "logout"
+msgstr ""
+
+#: templates/virtual.html:84
+msgid "make screenshot"
+msgstr ""
+
+#: templates/virtual.html:60
+msgid "max"
+msgstr ""
+
+#: __init__.py:68 __init__.py:82 templates/virtual.html:58
+#: templates/virtual_groupby.inc.html:13 templates/virtual_groupby.inc.html:28
+#: templates/virtuals.html:12 templates/virtuals.html:29
+#: templates/virtuals.html:104
+msgid "memory"
+msgstr ""
+
+#: templates/virtual.html:54 templates/virtual_groupby.inc.html:27
+#: templates/virtuals.html:27
+msgid "name"
+msgstr ""
+
+#: __init__.py:70 __init__.py:83 templates/virtual_groupby.inc.html:15
+#: templates/virtual_groupby.inc.html:29
+msgid "nrvirtcpu"
+msgstr ""
+
+#: templates/virtual.html:65 templates/virtuals.html:16
+msgid "number of cpu"
+msgstr ""
+
+#: templates/virtual_groupby.inc.html:22
+msgid "order by"
+msgstr ""
+
+#: templates/virtual.html:35 templates/virtual.html:47
+#: templates/virtuals.html:64 templates/virtuals.html:115
+msgid "overview"
+msgstr ""
+
+#: templates/index.html:5
+msgid "plop"
+msgstr ""
+
+#: templates/virtual_groupby.inc.html:17 templates/virtual_groupby.inc.html:31
+msgid "reset"
+msgstr ""
+
+#: templates/index.html:2 templates/login.html:2 templates/new_virtual.html:2
+#: templates/preferences.html:2
+msgid "signin"
+msgstr ""
+
+#: __init__.py:69 templates/virtual.html:69
+#: templates/virtual_groupby.inc.html:14 templates/virtuals.html:14
+#: templates/virtuals.html:31 templates/virtuals.html:110
+msgid "state"
+msgstr ""
+
+#: templates/navigation_bar.html:18
+msgid "table"
+msgstr ""
+
+#: templates/navigation_bar.html:18 templates/virtual.html:24
+#: templates/virtuals.html:20 templates/virtuals.html:51
+#: templates/virtuals.html:80
+msgid "table view"
+msgstr ""
+
+#: templates/navigation_bar.html:19
+msgid "thumbnail"
+msgstr ""
+
+#: templates/navigation_bar.html:19 templates/virtual.html:26
+#: templates/virtuals.html:52 templates/virtuals.html:81
+msgid "thumbnails"
+msgstr ""
+
+#: templates/virtual.html:3
+msgid "virtual"
+msgstr ""
+
+#: templates/navigation_bar.html:16 templates/virtual.html:22
+#: templates/virtuals.html:42 templates/virtuals.html:47
+#: templates/virtuals.html:50 templates/virtuals.html:76
+#: templates/virtuals.html:79
+msgid "virtuals"
+msgstr ""
+
+#: templates/virtuals.html:13 templates/virtuals.html:17
+msgid "virtuals with"
+msgstr ""
+

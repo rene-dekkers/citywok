@@ -1,0 +1,35 @@
+{% extends 'cw/layout.html' %}
+{% block title %}{{ job | e }}{% endblock %}
+{% block body %}
+{{ layout.page_title(job)|safe }}
+{% include 'cw/message.html' %}
+{% if fields|length > 0 %}
+	{% if form_disabled %}
+	<form method="post" id="form-login">
+	{% else %}
+	<form method="post" action="{{ url_for('jenkins.generate_form', job=job) }}" id="form-login">
+	{% endif %}
+		{{ table.start(job | title)|safe }}
+			{% for field in fields %}
+				{{ table.row()|safe }}
+				{{ table.head(field['description'])|safe }}
+				{% if field['type'] == 'text' %}
+					{{ table.column(html.input(field['name'], field['value'], size=none)|safe)|safe }}
+				{% elif field['type'] == 'password' %}
+					{{ table.column(html.input(field['name'], value=field['value'], type='password', size=none)|safe)|safe }}
+					{# macro input(name, value='', type='text', size=20) -#}
+				{% elif field['type'] == 'textarea' %}
+					{{ table.column(html.textarea(field['name'], field['value'])|safe)|safe }}
+				{% elif field['type'] == 'select' %}
+					{{ table.column(html.select(field['name'], value=field['value'], items=field['items'])|safe)|safe }}
+				{% endif %}
+				{{ table.endrow()|safe }}
+			{% endfor %}
+		{{ table.row()|safe }}
+			{{ table.column()|safe}}
+			{{ table.column(html.button(_('build') | title, type='submit', disabled = form_disable)|safe, align='center')|safe }}
+		{{ table.endrow()|safe }}
+		{{ table.end()|safe }}
+	</form>
+{% endif %}
+{% endblock %}

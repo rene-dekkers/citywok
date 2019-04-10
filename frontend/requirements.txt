@@ -1,0 +1,6 @@
+flask
+flask-babel
+flask-sqlalchemy
+flask-Session
+ldap3
+requests

@@ -1,0 +1,124 @@
+{% extends 'cw/layout.html' %}
+{% macro state_icon(state) -%}
+{%- if state == 'running' -%}
+{{- layout.icon('play', title=state | title)|safe }}
+{%- elif state == 'shutoff' -%}
+{{- layout.icon('stop', title=state | title)|safe }}
+{%- else -%}
+{{- layout.icon('question-sign', title=state | title)|safe -}}
+{%- endif -%}
+{%- endmacro -%}
+{% macro head_groupby(groupvalue, virtuals) %}
+	{% if session.get('groupby','') != '' %}
+		{% if session.get('groupby','') == _('hypervisor') %}
+			{{ head_helper(_('virtuals on' | capitalize + ' ' + groupvalue), virtuals | length) }}
+		{% elif session.get('groupby') == _('memory') %}
+			{{ head_helper(_('virtuals with') | capitalize + ' ' + groupvalue | byteformat, virtuals | length) }}
+		{% elif session.get('groupby') == _('state') %}
+			{{ head_helper(_('virtuals that are' | capitalize + ' ' + groupvalue), virtuals | length) }}
+		{% elif session.get('groupby') == _('number of cpu') %}
+			{{ head_helper(ngettext("Virtuals with %(num)s cpu", "virtuals with %(num)s cpu's", groupvalue | int), virtuals | length) }}
+		{% endif %}
+	{% else %}
+		{{ head_helper(	_('table view') | title, virtuals | length) }}
+	{% endif %}
+{% endmacro %}
+{% macro head_helper(title, count=0) %}
+	{% if session.get('view','') == _('table') %}
+		{{ table.start(title + '&nbsp; <span class="badge">%d</span>'|format(count)|safe, striped=true)|safe }}
+		{{ table.row(head=true)|safe }}
+			{{ table.head(_('name')) | title|safe }}
+			{{ table.head(_('hypervisor')) | title|safe }}
+			{{ table.head(_('memory')) | title|safe }}
+			{{ table.head(_('Cpu')) | title|safe }}
+			{{ table.head(_('state') | title, align='center' )|safe }}
+		{{ table.endrow(head=true)|safe }}
+	{% elif session.get('view','') == _('thumbnail') %}
+		{{ html.div('col-md-12 panel-default')|safe }}
+		{{ html.span('lead')|safe }}{{ title | e }}{{ html.endspan()|safe }}
+		{{ html.enddiv()|safe }}
+	{% endif %}
+{% endmacro %}
+
+{% block title %}{{ _('virtuals') | title }}{% endblock %}
+
+{% block body %}
+	{% if session.get('view','') == _('table') %}
+	{#Table view#}
+		{{ layout.page_title(_('virtuals'))|safe }}
+
+		{{ breadcrumb.start()|safe }}
+		{{ breadcrumb.item(_('virtuals') | title)|safe }}
+		{{ breadcrumb.item(_('table view') | title, active=true)|safe }}
+		{{ breadcrumb.item(_('thumbnails') | title, href=url_for('virtual', view=_('thumbnail')))|safe }}
+		{{ breadcrumb.end()|safe }}
+
+		{% include 'cw/virtual_groupby.inc.html' %}
+		{% for groupval in virtuals.keys() %}
+			{% set group = virtuals[groupval] %}
+
+			{#virtuals in group#}
+			{{ head_groupby(groupval, group) }}
+
+			{% for virtual in group %}
+				{{ table.row()|safe }}
+					{{ table.column(html.hyperlink(virtual['name'], url_for('virtual', virtual=virtual['name'], tab=_('overview')), name=virtual['name'])|safe)|safe }}
+					{{ table.column(virtual['hypervisor'])|safe }}
+					{{ table.column(virtual['memory'] | byteformat)|safe }}
+					{{ table.column(virtual['nrvirtcpu'])|safe }}
+					{{ table.column(state_icon(virtual['state'])|safe, align='center')|safe }}
+				{{ table.endrow()|safe }}
+			{% endfor %}
+			{{ table.end()|safe }}
+		{% endfor %}
+
+	{% elif session.get('view','') == _('thumbnail') %}
+	{#Thumbnail view#}
+		{{ layout.page_title(_('virtuals'))|safe }}
+
+		{{ breadcrumb.start()|safe }}
+		{{ breadcrumb.item(_('virtuals') | title)|safe }}
+		{{ breadcrumb.item(_('table view') | title, href=url_for('virtual', view=_('table')))|safe }}
+		{{ breadcrumb.item(_('thumbnails') | title, active=true)|safe }}
+		{{ breadcrumb.end()|safe }}
+
+		{% include 'cw/virtual_groupby.inc.html' %}
+
+		{{ html.div('row')|safe }}
+		
+		{% for groupval in virtuals.keys() %}
+			{% set group = virtuals[groupval] %}
+
+			{#virtuals in group#}
+			{{ head_groupby(groupval, group) }}
+
+			{% for virtual in group %}
+				{% set content %}
+				{{ html.hyperlink(
+					layout.image(url_for('virtual', virtual=virtual['name']) + '/screenshot?size=400x300', class='img-thumbnail virtual-screenshot')|safe,
+					url_for('virtual', virtual=virtual['name'], tab=_('graphical console'))
+				)|safe }}
+				{{ table.start()|safe }}{{ table.row()|safe }}
+					{{ table.row()|safe }}
+						{{ table.column(_('hypervisor') | title)|safe }}{{ table.column(virtual['hypervisor'] | title)|safe }}
+					{{ table.endrow()|safe }}
+					{{ table.row()|safe }}
+						{{ table.column(_('memory') | title)|safe }}{{ table.column(virtual['memory'] | byteformat)|safe }}
+					{{ table.endrow()|safe }}
+					{{ table.row()|safe }}
+						{{ table.column(_('Cpu') | title)|safe }}{{ table.column(virtual['nrvirtcpu'])|safe }}
+					{{ table.endrow()|safe }}
+					{{ table.row()|safe }}
+						{{ table.column(_('state') | title)|safe }}{{ table.column(state_icon(virtual['state']) | safe)|safe }}
+					{{ table.endrow()|safe }}
+				{{ table.end()|safe }}
+				{% endset %}
+				{{ html.div('col-sm-6 col-md-3')|safe }}
+				{{ layout.thumbnail(content|safe, title=html.hyperlink(virtual['name'] | title, url_for('virtual', virtual=virtual['name'], tab=_('overview')), name=virtual['name'])|safe)|safe }}
+				{{ html.enddiv()|safe }}
+			{% endfor %}
+		{% endfor %}
+
+		{{ html.enddiv()|safe }}
+	{% endif %}
+{% endblock %}

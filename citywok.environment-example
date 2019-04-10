@@ -1,0 +1,13 @@
+SOFTWARE_NAME=CityWok
+HOST=0.0.0.0
+PORT=8080
+BACKEND=http://10.87.65.101:8090/;apikey=def,http://10.87.65.102:8090/;apikey=abc
+DEBUG=True
+LANGUAGES=nl
+SECRET_KEY=secret
+
+BABEL_DEFAULT_LOCALE=nl
+BABEL_DEFAULT_TIMEZONE=Europe/Amsterdam
+
+SQLALCHEMY_DATABASE_URI=sqlite:////~/Projects/citywok.db
+WEBSOCKET_URL_USERLAND=ws://localhost:8091

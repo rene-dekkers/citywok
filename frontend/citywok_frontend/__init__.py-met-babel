@@ -1,0 +1,237 @@
+"""
+CityWok HTML GUI / json REST frontend
+
+Goal:
+- Communicate with one or more CityWok libvirt backends
+- Provide GUI for administrators
+- Provide REST interface for advanced administrators
+"""
+__version__ = 0.01
+__author__ = 'Rene Dekkers'
+__url__ = 'https://git.better-it-solutions.nl/virtualization/citywok'
+
+import sys
+#from flask import Flask, jsonify, make_response, request
+#from exception import ApiException
+#from exception import ConnectionError
+#from flask import Flask, jsonify, render_template as _rt, make_response as _mr
+from flask import Flask, jsonify, render_template, make_response
+from flask import g, request, session, redirect, url_for
+from flask import Response, stream_with_context
+#from flask.ext.babel import Babel, gettext
+from flask.ext import babel as _babel
+from flask_sqlalchemy import SQLAlchemy
+
+from frontend.exception import ApiException
+
+from pprint import pprint
+
+app = Flask(__name__)
+app.config.from_pyfile('settings.ini')
+
+babel = _babel.Babel(app)
+import frontend.backendconnection
+conn = backendconnection.BackendConnections(app.config['BACKEND'])
+
+db = SQLAlchemy(app)
+app.logger.info('Connected to database: %s' % db)
+
+import frontend.auth
+auth.db = db
+auth.app = app
+
+import frontend.filters
+app.jinja_env.filters.update(filters.dict)
+
+@app.before_request
+def update_globals():
+	app.jinja_env.globals['version'] = __version__
+	g.version = __version__
+	g.lang = get_locale()
+	g.gettext = app.jinja_env.globals['gettext']
+
+#@babel.localeselector
+def get_locale():
+	# if a user is logged in, use the locale from the user settings
+	locale = session.get('locale')
+	if locale is not None:
+		return locale
+	# otherwise try to guess the language from the user accept
+	# header the browser transmits.  We support de/fr/en in this
+	# example.  The best match wins.
+	print('get locale')
+	return request.accept_languages.best_match(app.config['LANGUAGES'])
+
+def nl():
+	return 'nl'
+
+
+def __group_virtuals_by(virtuals, groupby):
+	grouped = {}
+
+	if groupby == 'memory': keyname = 'memory'
+	elif groupby == 'state': keyname = 'state'
+	elif groupby == 'nrvirtcpu': keyname = 'nrvirtcpu'
+	else: keyname = 'hypervisor'
+
+	for v in virtuals:
+		if v[keyname] not in grouped:
+			grouped[v[keyname]] = []
+		grouped[v[keyname]].append(v)
+
+	virtuals = list(grouped.values())
+	
+	return virtuals
+
+def __order_virtuals_by(virtuals, orderby = None):
+#TODO implement gettext
+	if orderby == 'memory': keyname = 'memory'
+	elif orderby == 'nrvirtcpu': keyname = 'nrvirtcpu'
+	else: keyname = 'name'
+	import operator
+	virtuals.sort(key = operator.itemgetter(keyname))
+	return virtuals
+
+@app.route('/login', methods=['GET','POST'])
+def login():
+	if auth.CheckAuth():
+		return redirect(url_for('index'), code=302)
+	if request.method == 'POST' and 'login' in request.form and 'password' in request.form:
+		result, message = auth.Authenticate(request.form['login'], request.form['password'])
+		if result == auth.AUTH_OK:
+			return redirect(url_for('index'), code=302)
+		#elif result == auth.AUTH_FAILED:
+		else:
+			return make_response(render_template('login.html', error = message))
+	return make_response(render_template('login.html'))
+
+@app.route('/logout', methods=['GET'])
+def logout():
+	auth.LogOut()
+	return redirect(url_for('login', code=302))
+
+@app.route('/')
+@auth.CheckAuth
+def index():
+	babel.localeselector(nl)
+	print(_babel.gettext('version'))
+	return make_response(render_template('index.html'))
+
+
+@app.route('/preferences/<string:username>', methods=['GET'])
+@auth.CheckAuth
+def preferences(username):
+	return make_response(render_template('preferences.html'))
+
+@app.route('/hypervisor/', methods=['GET'])
+@app.route('/hypervisor/<string:hypervisor>', methods=['GET'])
+@auth.CheckAuth
+def hypervisor(hypervisor = None):
+	return make_response(
+		render_template('hypervisor.html',
+			virtuals = virtuals,
+	))
+
+@app.route('/virtual/', methods=['GET'])
+@app.route('/virtual/<string:virtual>', methods=['GET'])
+@app.route('/virtual/<string:virtual>/<string:tab>', methods=['GET'])
+@auth.CheckAuth
+def virtual(virtual = None, tab = None):
+	if virtual is None:
+		#save form settings to session
+		for i in ['view','groupby','orderby']:
+			try: session[i] = request.args[i]
+			except: pass
+
+		_vs = conn.get_all_virtuals()
+		if 'orderby' in session:
+			_vs = __order_virtuals_by(_vs, session['orderby'])
+		else:
+			_vs = __order_virtuals_by(_vs)
+		if 'groupby' in session:
+			_vs = __group_virtuals_by(_vs, session['groupby'])
+		else:
+			_vs = [_vs]
+		return make_response(
+			render_template('virtuals.html',
+				virtuals = _vs,
+		))
+	else:
+		_v = conn.get_virtual(virtual)
+		try: token = conn.create_token(virtual)['token']
+		except: token = None
+		return make_response(
+			render_template('virtual.html',
+				virtual = _v,
+				tab = tab,
+				ws_uri = app.config['CONSOLE_WEBSOCKET_URI'] % token,
+		))
+
+@app.route('/virtual/<virtual>/screenshot', methods=['GET'])
+@auth.CheckAuth
+def virtual_screenshot(virtual):
+	import base64, os
+	try:
+		size=tuple(request.args['size'].split('x'))
+	except:
+		size = ()
+	payload = conn.get_virtual_screenshot(virtual, size=size)
+	if payload in [None,False]:
+		import base64
+		black = open('%s/static/img/virtual_nostate.png' % os.path.dirname(os.path.realpath(__file__)), mode='rb').read()
+		payload = base64.b64encode(black).decode()
+
+	response = make_response(base64.b64decode(payload))
+	response.headers['content-type'] = 'image/png'
+	return response
+
+@app.route('/virtual/<virtual>/state', methods=['PUT'])
+def put_virtual_state(virtual):
+	try:
+		if request.json is None:
+			raise ApiException('Please send data in json format')
+		print(request.json)
+		#return conn.update_state(virtual, request.json['state'])
+		result = conn.wrapper(virtual).request('put', ['virtual',virtual,'state'], json=request.json)
+		if result.status_code != 200:
+			raise Exception(result.json()['message'])
+		print(result.status_code)
+		print(result.json())
+		return jsonify({})
+	except:
+		return jsonify({'message':str(sys.exc_info()[1])}), 400
+
+@app.route('/new_virtual', methods=['GET','POST'])
+@auth.CheckAuth
+def new_virtual():
+	if request.method == 'POST':
+		print('do iets')
+	return make_response(
+		render_template('new_virtual.html',
+	))
+
+@app.route('/websocketproxy')
+def websocketproxy():
+	"IN DEVELOPMENT: Proxy http to websocketbackend."
+	#TODO reverse engineer this with a real websocket
+	import requests
+	_headers = {}
+	for h,v in request.headers.items():
+		_headers[h] = v
+	resp = requests.get('http://localhost:8091?token=plop', stream=True, headers = _headers)
+
+	_headers = {}
+	#for h,v in resp.headers.items():
+	#	_headers[h] = v
+	#_headers['Connection'] = 'close' if resp.headers['Upgrade'] == '' else 'upgrade'
+	_headers['Connection'] = resp.headers['Connection']
+	_headers['Sec-WebSocket-Accept'] = resp.headers['Sec-WebSocket-Accept']
+	_headers['Sec-WebSocket-Protocol'] = resp.headers['Sec-WebSocket-Protocol']
+	_headers['Upgrade'] = resp.headers['Upgrade']
+	real_response = Response(
+		stream_with_context(resp.iter_content()),
+		content_type = req.headers['content-type'],
+		headers = _headers,
+		status = resp.status_code,
+	)
+	return real_response

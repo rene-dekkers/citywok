@@ -1,0 +1,20 @@
+{% extends 'cw/layout.html' %}
+{% block title %}Ansible inventory{% endblock %}
+{% block body %}
+{{ layout.page_title('Inventory')|safe }}
+
+{{ table.start('Hosts', striped=true)|safe }}
+	{{ table.row()|safe }}
+		{{ table.head('Naam')|safe }}
+		{{ table.column(host['host_name'])|safe }}
+	{{ table.endrow(head=true)|safe }}
+	{{ table.row()|safe }}
+		{{ table.head('Adres')|safe }}
+		{{ table.column(host['host_address'])|safe }}
+	{{ table.endrow(head=true)|safe }}
+	{{ table.row()|safe }}
+		{{ table.head('Vars')|safe }}
+		{{ table.column(host['host_vars'])|safe }}
+	{{ table.endrow(head=true)|safe }}
+{{ table.end()|safe }}
+{% endblock %}

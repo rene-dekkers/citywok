@@ -1,0 +1,109 @@
+h1, .h1 {
+	font-size: 39px;
+}
+
+h1, .h1, h2, .h2, h3, .h3 {
+	margin-top: 21px;
+	margin-bottom: 10.5px;
+}
+
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+	font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-weight: 300;
+	line-height: 1.1;
+	color: inherit;
+}
+
+h1 {
+	font-size: 2em;
+	margin: 0.67em 0;
+}
+
+* {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+h1 {
+	display: block;
+	font-size: 2em;
+	-webkit-margin-before: 0.67em;
+	-webkit-margin-after: 0.67em;
+	-webkit-margin-start: 0px;
+	-webkit-margin-end: 0px;
+	font-weight: bold;
+}
+
+.container {
+	margin-right: auto;
+	margin-left: auto;
+	padding-left: 15px;
+	padding-right: 15px;
+}
+
+.login-page {
+	padding-top: 40px;
+	padding-bottom: 40px;
+}
+
+.login-page .form-signin {
+	max-width: 330px;
+	padding: 15px;
+	margin: 0 auto;
+}
+.login-page .form-signin input[type="text"], .login-page .form-signin input[type="password"] {
+	margin-bottom: 10px;
+	border-bottom-right-radius: 0;
+	border-bottom-left-radius: 0;
+}
+
+.center {
+	text-align: center;
+}
+
+.virtual-screenshot {
+	min-width: 200px;
+	display: block;
+	max-width:200px;
+	max-height:150px;
+	width: auto;
+	height: auto;
+}
+
+.white {
+	color: white;
+}
+
+a.white:hover {
+	color: white;
+}
+
+.console-toolbar {
+	padding: 5px 8px;
+}
+
+.console-not-running {
+	background: black;
+/*	width: 800px;
+	height: 600px;*/
+	color: white;
+	text-align: center;
+	padding: 200px;
+	min-width: 140px;
+	max-width: 800px;
+}
+
+.groupby {
+	padding-bottom: 15px;
+}
+.groupby form {
+	margin-top: 0px;
+}
+
+.clearsearch {
+	position: absolute;
+	left: 78%;
+	top: 25%;
+	cursor: pointer;
+}

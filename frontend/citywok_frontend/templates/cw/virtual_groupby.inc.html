@@ -1,0 +1,41 @@
+{% macro url(groupby=none, orderby=none) -%}
+{{ url_for('virtual', groupby=groupby, orderby=orderby) }}
+{%- endmacro -%}
+<div class="groupby align-top">
+	<div class="btn-group align-bottom">
+		<button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			{{ layout.icon('tags')|safe }}&nbsp;
+			{{ _('group by') | title }}
+			{% if 'groupby' in session %}&nbsp;<span class="label label-success">{{ session['groupby'] | title }}</span>{% endif %}
+			&nbsp;<span class="caret"></span>
+		</button>
+		<ul class="dropdown-menu">
+		<li><a href="{{ url(groupby=_('hypervisor')) }}">{{ _('hypervisor') | title }}</a></li>
+		<li><a href="{{ url(groupby=_('memory')) }}">{{ _('memory') | title }}</a></li>
+		<li><a href="{{ url(groupby=_('state')) }}">{{ _('state') | title }}</a></li>
+		<li><a href="{{ url(groupby=_('nrvirtcpu')) }}">{{ _('nrvirtcpu') | title }}</a></li>
+		<li role="separator" class="divider"></li>
+		<li><a href="{{ url(groupby='') }}">{{ _('reset') | title }}</a></li>
+		</ul>
+	</div> 
+	<div class="btn-group">
+		<button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			{{ layout.icon('sort')|safe }}&nbsp;
+			{{ _('order by') | title }}
+			{% if 'orderby' in session %}&nbsp;<span class="label label-success">{{ session['orderby'] | title }}</span>{% endif %}
+			<span class="caret"></span>
+		</button>
+		<ul class="dropdown-menu">
+		<li><a href="{{ url(orderby=_('name')) }}">{{ _('name') | title }}</a></li>
+		<li><a href="{{ url(orderby=_('memory')) }}">{{ _('memory') | title }}</a></li>
+		<li><a href="{{ url(orderby=_('nrvirtcpu')) }}">{{ _('nrvirtcpu') | title }}</a></li>
+		<li role="separator" class="divider"></li>
+		<li><a href="{{ url(orderby='') }}">{{ _('reset') | title }}</a></li>
+		</ul>
+	</div>
+	<div class="btn-group pull-right">
+		<form id="searchform" class="navbar-form navbar-right" role="search" method="get" action="{{ url_for('virtual') }}">
+			<input type="text" class="form-control" placeholder="Search" name="search" id="searchinput" value="{{ session.get('search','') }}">{{ layout.icon('times-circle clearsearch')|safe }}<button type="submit" class="btn btn-default">{{ layout.icon('search')|safe }}</button>
+		</form>
+	</div>
+</div>

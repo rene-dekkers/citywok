@@ -1,0 +1,14 @@
+
+			{# for menu in g.menu -#}
+			<ul class="nav navbar-nav">
+			<li class="dropdown">
+				<a href="" class="dropdown-toggle" id="drop_{{ menu['name'] }}" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ menu['name'] }} <span class="caret"></span> </a>
+				<ul class="dropdown-menu" aria-labelledby="drop_{{ menu['name'] }}">
+					{%- for item in menu.items -%}
+						<li><a href="{{ url_for(item['url'], **item['url_args']|default({})) }}">{{ item['text'] }}</a>
+					{%- endfor -%}
+				</ul>
+			</li>
+			</ul>
+			{#- endfor -#}
+

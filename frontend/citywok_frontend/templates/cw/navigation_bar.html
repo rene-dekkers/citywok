@@ -1,0 +1,39 @@
+<nav class="navbar navbar-default navbar-static" id="navbar">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button class="collapsed navbar-toggle" type="button" data-toggle="collapse" data-target=".navbar-collapse">
+			<span class="sr-only">Toggle navigation</span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			</button>
+			<a href="{{ url_for('index') }}" class="navbar-brand">{{config.SOFTWARE_NAME}}</a>
+		</div>
+
+		<div class="collapse navbar-collapse navbar-collapse">
+			<ul class="nav navbar-nav">
+				{% if session.username %}
+				<li class="dropdown">
+					<a href="" class="dropdown-toggle" id="drop_virtuals" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ _('virtuals') | title }} <span class="caret"></span> </a>
+					<ul class="dropdown-menu" aria-labelledby="drop_virtuals">
+						<li><a href="{{ url_for('virtual', virtual='', view=_('table')) }}">{{ layout.icon('th-list')|safe }} {{ _('table view') | title }}</a></li>
+						<li><a href="{{ url_for('virtual', virtual='', view=_('thumbnail')) }}">{{ layout.icon('th-large')|safe }} {{ _('thumbnails') | title }}</a></li>
+						<li><a href="{{ url_for('plain', virtual='', view=_('thumbnail')) }}" target="_blank">{{ layout.icon('font')|safe }} {{ _('plain text') | title }}</a></li>
+						<li role="separator" class="divider"></li>
+						<li><a href="{{ url_for('new_virtual') }}">{{ layout.icon('plus')|safe }} {{ _('add server') | title }}..</a></li>
+					</ul>
+				</li>
+				{% endif %}
+			</ul>
+			{# Render menu object #}
+			<ul class="nav navbar-nav navbar-right">
+				{% if session.username %}
+				<li><a href="{{ url_for('preferences', username=session.username) }}">{{ layout.icon('user')|safe }} {{ session.username | title }}</a></li>
+				<li><a href="{{ url_for('logout') }}">{{ layout.icon('sign-in')|safe }} {{ _('sign-out') | title }}</a></li>
+				{% else %}
+				<li><a href="#">{{ layout.icon('sign-in')|safe }} Login</a></li>
+				{% endif %}
+			</ul>
+		</div>
+	</div>
+</nav>

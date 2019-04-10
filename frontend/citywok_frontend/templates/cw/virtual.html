@@ -1,0 +1,83 @@
+{%- extends 'cw/layout.html' -%}
+{%- import 'cw/macros/console.inc' as console -%}
+{%- block title %}{{ _('virtual') | title }}{% endblock %}
+{%- set icons = {
+	'running':'play',
+	'shutoff':'stop',
+
+} 
+-%}
+
+{% if tab == ('graphical console') %}
+	{%- block head -%}
+	{{- super() -}}
+	{{- console.spice_includes()|safe -}}
+{%- endblock -%}
+{% endif %}
+
+{% block body %}
+	{{ layout.page_title(virtual['name'])|safe }}
+
+	{{ breadcrumb.start()|safe }}
+	{{ breadcrumb.item(_('virtuals') | title)|safe }}
+	{% if session['view'] == _('table') %}
+	{{ breadcrumb.item(_('table view') | title, href=url_for('virtual', view=_('table'), _anchor=virtual['name']))|safe }}
+	{% else %}
+	{{ breadcrumb.item(_('thumbnails') | title, href=url_for('virtual', view=_('thumbnail'), _anchor=virtual['name']))|safe }}
+	{% endif %}
+	{{ breadcrumb.item(virtual['name'] | title, active=true)|safe }}
+	{{ breadcrumb.end()|safe }}
+
+	{# layout.dropdown_menu(_('actions') | title + ' ', ) #}
+
+	{{ html.ul('nav nav-pills')|safe }}
+	{% for i in [
+		(_('overview'),'tasks'),
+		(_('configuration'),'cog'),
+		(_('graphical console'),'desktop'),
+	] %}
+	{{ 
+	html.listitem(
+		html.hyperlink(layout.icon(i[1]) | safe + ' ' + _(i[0]) | title, url_for('virtual', virtual=virtual['name'], tab=i[0]))|safe,
+		active=true if tab == i[0] else false)|safe 
+	}}
+	{% endfor %}
+	{{ html.endul()|safe }}
+
+	{% if tab in ['',_('overview')] %}
+		{{ table.start(_('configuration') | title)|safe }}
+			{{ table.row()|safe }}
+				{{ table.head(_('hypervisor') | title)|safe }}
+				{{ table.column(virtual['hypervisor'])|safe }}
+			{{ table.endrow()|safe }}
+			{{ table.row()|safe }}
+				{{ table.head(_('name') | title)|safe }}
+				{{ table.column(virtual['name'])|safe }}
+			{{ table.endrow()|safe }}
+			{{ table.row()|safe }}
+				{{ table.head(_('memory') | title)|safe }}
+				{% set c %}
+				{{ virtual['memory'] | byteformat|safe}}  ({{ virtual['maxmem'] | byteformat|safe }} {{ _('max') }})
+				{% endset %}
+				{{ table.column(c)|safe }}
+			{{ table.endrow()|safe }}
+			{{ table.row()|safe }}
+				{{ table.head(_('number of cpu') | title)|safe }}
+				{{ table.column(virtual['nrvirtcpu'] | title)|safe }}
+			{{ table.endrow()|safe }}
+			{{ table.row()|safe }}
+				{{ table.head(_('state') | title)|safe }}
+				{{ table.column(virtual['state'] | title)|safe }}
+			{{ table.endrow()|safe }}
+		{{ table.end()|safe }}
+		{{ layout.virtual_state(virtual['name'], virtual['state'])|safe }}
+	{% elif tab == _('configuration') %}
+	{% elif tab == _('graphical console') %}
+		{% if virtual['state'] == 'running' %}
+			{{ console.spice_connect_meuk(ws_uri)|safe }}
+			{{ console.spice_screen(virtual)|safe }}
+		{% else %}
+			{{ console.spice_screen_notrunning(virtual['state'])|safe }}
+		{% endif %}
+	{% endif %}
+{% endblock %}

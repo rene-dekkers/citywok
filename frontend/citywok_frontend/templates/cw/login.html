@@ -1,0 +1,16 @@
+{% extends 'cw/layout.html' %}
+{% block title %}{{ _('signin') }}{% endblock %}
+{% block body %}
+
+<div class="container login-page">
+	<form class="form-signin" role="form" method="post" action="{{ url_for('login') }}" id="form-login">
+		<input type="hidden" name="redirect" value="{{ redirect }}" />
+		<h2 class="form-signin-heading">{{ _('Sign in') }}</h2>
+		{% include 'cw/message.html' %}
+		<p>{% trans %}Enter your username and password to log in.{% endtrans %}</p>
+		<input type="text" class="form-control" placeholder="{{ _('Username') }}" name="login" value="{{ login }}" id="username" required autofocus>
+		<input type="password" class="form-control" placeholder="{{ _('Password') }}" name="password" id="password" required>
+		<button class="btn btn-lg btn-primary btn-block" type="submit">{{ _('Sign in') }}</button>
+	</form>
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+import sys, os
+if 'websockify' not in sys.path:
+	sys.path.append(
+		os.path.abspath(os.path.join(os.path.abspath(__file__), os.pardir, os.pardir, 'websockify'))
+	)
+
+import websockify
+#from websockify import websockify
+from websockify.websocketproxy import *
+
+class Token(object):
+	__backend_url = None
+	def __init__(self, backend_url):
+		self.__backend_url = backend_url
+	@property
+	def lookup(self, token):
+		print(self.__backend_url)
+		return ['localhost',5900]
+
+class Websockify(object):
+	__thread = None
+
+	def __run(self, **kwargs):
+		opts = {
+			'listen_host': kwargs['host'],
+			'verbose': None,
+			'token_plugin': kwargs['token_plugin'],
+			'target_host': None,
+			'ssl_target': None,
+			'web': None,
+			'listen_port': kwargs['port'],
+			'source_is_ipv6': None,
+			'target_port': None,
+			'auth_plugin': None,
+			'run_once': None,
+			'idle_timeout': 0,
+			'traffic': None,
+			'key': None,
+			'heartbeat': 0,
+			'daemon': False,
+			'wrap_mode': 'exit',
+			'wrap_cmd': None,
+			'record': None,
+			'cert': 'self.pem',
+			'unix_target': None,
+			'timeout': 0,
+			'ssl_only': None
+		}
+		server = WebSocketProxy(**opts)
+		logger_init()
+		server.start_server()
+
+	def run(self, **kwargs):
+		from multiprocessing import Process
+		import psutil, signal
+
+		parent = psutil.Process(os.getppid())
+		children = parent.children()
+		if len(children) > 1:
+			print('  - kill (old) websocket child with PID: %d' % children[0].pid)
+			os.kill(children[0].pid, signal.SIGTERM)
+		print('  - websocket started..')
+
+		kwargs['token_plugin'] = Token(['localhost', kwargs['port']])
+
+		self.__thread = Process(target=self.__run, kwargs=kwargs)
+		self.__thread.start()
+		#self.__thread.join()

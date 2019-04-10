@@ -1,0 +1,47 @@
+{%- import 'cw/macros/layout.inc' as layout -%}
+{%- import 'cw/macros/html.inc' as html -%}
+{%- import 'cw/macros/table.inc' as table -%}
+{%- import 'cw/macros/breadcrumb.inc' as breadcrumb -%}
+<!--
+{{ g.menu.Show() }}
+-->
+
+<!DOCTYPE html>
+<html lang="">
+<head>
+{% block head %}
+<title>
+{% block title %}
+{% if title %}{{ title }}{% endif %}
+{% endblock title %}
+ - 
+{% if header_name %}{{ header_name }}{% else %}CityWok{% endif %}
+</title>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{% if version %}<meta name="app-version" content="{{ version }}">{% endif %}
+<meta name="application-name" content="{{ header_name }}"/>
+<meta name="description" content="With the City Chicken and the City Beef">
+<link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
+<!--<link rel="mask-icon" sizes="any" href="{{ url_for('static', filename='img/favicon.png') }}" color="#ffffff">-->
+<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap-theme.css') }}" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='font-awesome/css/font-awesome.min.css') }}" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" type="text/css">
+<link rel="shortcut icon" href="/favicon.ico" >
+{% include extra_head_templates ignore missing with context %}
+{% endblock head %}
+</head>
+<body>
+{% include 'cw/navigation_bar.html' %}
+<div class="container" id="content">
+{% include 'cw/message.html' %}
+{% block body %}
+{% endblock %}
+</div>
+<script src="{{ url_for('static',filename='jquery/jquery.min.js') }}"></script>
+<script src="{{ url_for('static',filename='bootstrap/js/bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static',filename='js/citywok.js') }}"></script>
+</body>
+</html>

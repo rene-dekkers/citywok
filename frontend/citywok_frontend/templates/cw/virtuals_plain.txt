@@ -1,0 +1,17 @@
+** VIRTUAL OVERVIEW **
+
+{{ now.strftime('%d-%m-%Y %H:%M:%S') }}
+
+{% for groupval,group in virtuals.items() -%}
+╔{{ '═' * 45 }}╗
+║ {{ groupval.ljust(44)|title }}║
+║ {{ 'Naam'.ljust(30) }}{{ 'Memory'.ljust(10) }}{{ 'CPU'.ljust(4) }}║
+║ {{ '-' * 44 }}║
+{% for virtual in group %}
+	{%- set mem=virtual['memory']|byteformat -%}
+	║ {{ virtual['name'].ljust(30) -}}
+	{{- mem.ljust(10) }}
+	{{- virtual['nrvirtcpu'].__str__().ljust(4) }}║
+{% endfor -%}
+╚{{ '═' * 45 }}╝
+{% endfor -%}

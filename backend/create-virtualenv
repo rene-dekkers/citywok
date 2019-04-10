@@ -1,0 +1,18 @@
+#!/bin/bash
+if [ $# -ne 1 ]; then
+	echo "Usage: $0 <destination>"
+	exit 2
+fi
+
+FOLDER=$1
+
+python3 -m venv $FOLDER
+
+if [ ! -f $FOLDER/bin/pip3 ]; then
+	curl https://bootstrap.pypa.io/get-pip.py | $FOLDER/bin/python3
+fi
+
+$FOLDER/bin/pip3 install --upgrade pip
+$FOLDER/bin/pip3 install -r requirements.txt
+tar -cp citywok_backend start-backend.py requirements.txt | tar -xpf - -C $FOLDER
+sed -i '1 s#^.*$#\#\!'$FOLDER'/bin/python3#g' $FOLDER/start-backend.py

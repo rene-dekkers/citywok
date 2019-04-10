@@ -1,0 +1,19 @@
+{% extends 'cw/layout.html' %}
+{% block title %}Ansible inventory{% endblock %}
+{% block body %}
+{{ layout.page_title('Inventory')|safe }}
+
+{{ table.start('Hosts', striped=true)|safe }}
+	{{ table.row(head=true)|safe }}
+		{{ table.head('Naam')|safe }}
+		{{ table.head('Adres')|safe }}
+	{{ table.endrow(head=true)|safe }}
+
+	{% for host in hosts %}
+		{{ table.row()|safe }}
+			{{ table.column(html.hyperlink(host['host_name'], url_for('inventory.host', host=host['host_name'])|safe)|safe)|safe }}
+			{{ table.column(host['host_address'])|safe }}
+		{{ table.endrow()|safe }}
+	{% endfor %}
+{{ table.end()|safe }}
+{% endblock %}
